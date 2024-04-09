@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>suqi-center-machine</artifactId>
+        <groupId>com.suqi.center</groupId>
+        <version>1.4.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>suqi-center-machine-dao</artifactId>
+
+    <properties>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-starter-shardingsphere</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-starter-mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-starter-lock</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.leeuoy</groupId>
+                <artifactId>myplus-maven-plugin</artifactId>
+                <version>1.3.4-SNAPSHOT</version>
+                <configuration>
+                    <parent>com.suqi.center.machine.dao</parent>
+                    <globalPrefix></globalPrefix>
+                    <apiCommentPreFix></apiCommentPreFix>
+                    <!--                    <tablePrefixs>viz_</tablePrefixs>-->
+                    <enableLombok>false</enableLombok>
+                    <daoMode>false</daoMode>
+                    <serviceImplAnnotations>
+                        <ServiceImplAnnotation>
+                            <pkg>org.springframework.context.annotation.Primary</pkg>
+                        </ServiceImplAnnotation>
+                    </serviceImplAnnotations>
+                    <select>true</select>
+                    <!--<no_change>true</no_change>-->
+                    <!--                    <ext>-->
+                    <!--                        <apiBasePath>/viz/v1/external</apiBasePath>-->
+                    <!--                        <feignClientName>suqi-center-external</feignClientName>-->
+                    <!--                        <api>${project.parent.basedir}/${project.parent.artifactId}-api/src/main/java/</api>-->
+                    <!--                        <param>${project.parent.basedir}/${project.parent.artifactId}-api/src/main/java/</param>-->
+                    <!--                        <pageParam>${project.parent.basedir}/${project.parent.artifactId}-api/src/main/java/</pageParam>-->
+                    <!--                        <result>${project.parent.basedir}/${project.parent.artifactId}-api/src/main/java/</result>-->
+                    <!--                        <curd>${project.parent.basedir}/${project.parent.artifactId}-biz/src/main/java/</curd>-->
+                    <!--                        <rest>${project.parent.basedir}/${project.parent.artifactId}-service/src/main/java/</rest>-->
+
+                    <!--                        <aggregationServiceImpl>F:/workspace/suqi-application-backendapi/suqi-application-backendapi-biz/src/main/java/</aggregationServiceImpl>-->
+                    <!--                        <aggregationServiceImplPkg>com.suqi.application.backendapi.biz.service.viz.api.impl</aggregationServiceImplPkg>-->
+
+                    <!--                        <aggregationRest>F:/workspace/suqi-application-backendapi/suqi-application-backendapi-service/src/main/java/</aggregationRest>-->
+                    <!--                        <aggregationRestPkg>com.suqi.application.backendapi.service.viz.rest</aggregationRestPkg>-->
+                    <!--                    </ext>-->
+                    <dbs>
+                        <db>
+                            <serviceImplAnnotations>
+                                <ServiceImplAnnotation>
+                                    <imports>
+                                        <String>com.suqi.center.machine.dao.constants.DBConstants</String>
+                                    </imports>
+                                    <pkg>com.baomidou.dynamic.datasource.annotation.DS</pkg>
+                                    <annotation>DS(DBConstants.SHARDING)</annotation>
+                                </ServiceImplAnnotation>
+                            </serviceImplAnnotations>
+                            <jdbc>
+                                <url>jdbc:mysql://192.168.22.213:23622/fast_cloud?useUnicode=true&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;allowMultiQueries=true&amp;serverTimezone=PRC&amp;useSSL=false</url>
+                                <username>fastdb</username>
+                                <password>fast@dev@)@)</password>
+                            </jdbc>
+                            <tables>
+                                <table>
+                                    <name>em_soc_device_cmd_reboot_record</name>
+                                </table>
+                            </tables>
+                        </db>
+                    </dbs>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

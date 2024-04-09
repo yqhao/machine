@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.MemberDeviceMapper">
+
+    <select id="getMemberNameByDeviceId" resultType="java.lang.String">
+        select umb.mobile from yun_member_device ymd left join uc_member_base umb
+        on ymd.fk_member_id = umb.id
+        <where>
+            ymd.device_id = #{deviceId}
+                 and ymd.status = 50
+        </where>
+    </select>
+    <select id="getMemberByExternalAddr" resultType="java.lang.String">
+        select umb.mobile from yun_member_device ymd left join em_soc_devices esd
+        on ymd.device_id = esd.device_id
+        left join uc_member_base umb
+        on ymd.fk_member_id = umb.id
+        where esd.external_addr = #{externalAddr} and ymd.status = 50
+        group by ymd.fk_member_id
+    </select>
+
+    <select id="getMemberDeviceByDeviceId" resultType="com.suqi.center.machine.dao.vo.MemberDeviceVo">
+        select ymd.*,umb.mobile from yun_member_device ymd left join uc_member_base umb
+        on ymd.fk_member_id = umb.id
+        <where>
+            ymd.device_id = #{deviceId}
+            and ymd.status = 50
+        </where>
+    </select>
+
+</mapper>

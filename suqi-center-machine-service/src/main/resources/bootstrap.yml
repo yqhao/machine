@@ -1,0 +1,105 @@
+server:
+  port: 20000
+  max-http-header-size: 80KB
+  tomcat:
+    # 等待队列
+    accept-count: 1000
+    # 最多连接数
+    max-connections: 10000
+    # 最大线程数 1核2G内存，线程数建议值200；4核8G内存， 线程数建议值800
+    threads.max: 800
+    # 最小空闲线程
+    threads.min-spare: 100
+    # 连接超时
+    connection-timeout: 10000
+    uri-encoding: utf-8
+
+spring:
+  application:
+    name: suqi-center-machine
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 512000     # 文件上传大小限制为500kb
+      max-request-size: 512000  # 请求大小限制为500kb
+  jmx:
+    enabled: false
+  cloud:
+    nacos:
+      config:
+        # nacos-service:8848
+        # 192.168.22.210:31000
+        server-addr: nacos-service:8848
+        namespace: 9e015d62-7971-4f37-a140-1b9e7c9c1e8f
+        group: DEFAULT_GROUP
+        name: suqi-center-machine
+        file-extension: yaml
+        refresh-enabled: true
+      discovery:
+        server-addr: nacos-service:8848
+        namespace: 9e015d62-7971-4f37-a140-1b9e7c9c1e8f
+        group: DEFAULT_GROUP
+#  redis:
+#    # Redis 单机单实例
+#    database: 0
+#    host: 192.168.22.207
+#    port: 6379
+#    password: 1@3djkdre
+    # Redis 哨兵模式
+    #    database: 1
+    #    password: xxx
+    #    sentinel:
+    #      master: xxx-master
+    #      nodes: 192.168.1.191:26379,192.168.1.192:26379,192.168.1.193:26379
+    # Redis 集群模式
+    #    password: xxx
+    #    cluster:
+    #      nodes: 192.168.1.201:6379,192.168.1.202:6379,192.168.1.203:6379,192.168.1.204:6379,192.168.1.205:6379,192.168.1.206:6379
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.http.server.reactive: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.ipc.netty: DEBUG
+    reactor.netty: DEBUG
+    org.apache: INFO
+
+## 开启所有actuator-endpoint
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  security:
+    enabled: false
+
+# mybatis 配置
+mybatis-plus:
+  mapperLocations: [ "classpath*:mapper/*.xml" ]
+  typeAliasesPackage: "com.suqi.center.machine.dao"
+  #逻辑删除：dr=0为未删除，dr=1为删除
+  global-config:
+    db-config:
+      #id类型。
+      id-type: ASSIGN_ID # 默认为ASSIGN_ID
+      logic-delete-field: dr
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
+suqi-cache:
+  virtual-phone-runtime-status:
+    key-name: virtual-phone-runtime-status
+    # 10天
+    expire-seconds: 864000

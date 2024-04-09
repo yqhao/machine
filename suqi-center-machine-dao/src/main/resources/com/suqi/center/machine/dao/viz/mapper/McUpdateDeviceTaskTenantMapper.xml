@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.viz.mapper.McUpdateDeviceTaskTenantMapper">
+
+
+    <select id="quickPageById" resultType="com.suqi.center.machine.dao.viz.entity.McUpdateDeviceTaskTenant">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM viz_mc_update_device_task_tenant
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        and id &gt; #{lastId}
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+    <select id="quickPage" resultType="com.suqi.center.machine.dao.viz.entity.McUpdateDeviceTaskTenant">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM viz_mc_update_device_task_tenant
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        <if test="pageNo &gt; 1">
+                        and id &gt; (
+                            SELECT id FROM viz_mc_update_device_task_tenant
+                                        <where>
+                                        <if test="ew != null">
+                                            ${ew.sqlSegment}
+                                        </if>
+                                        </where>
+                                        ORDER BY id LIMIT ${((pageNo-1)*pageSize)-1}, 1)
+                        </if>
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+    <select id="listPage" resultType="com.suqi.center.machine.dao.viz.vo.McUpdateDeviceTaskTenantListVo">
+        select mudtt.id, mudtt.fk_tenant_id, mudt.name mcUpdateDeviceTaskName, mssp.supplier_type, msspt.name serviceSoftwarePackageTypeName
+        , mssp.name serviceSoftwarePackageName, mudtt.create_time, mudtt.last_update_time
+            from viz_mc_update_device_task_tenant mudtt
+            left join viz_mc_update_device_task mudt on mudtt.fk_mc_update_device_task_id = mudt.id
+            left join viz_mc_service_software_package mssp on mudt.fk_mc_server_software_package_id = mssp.id
+            left join viz_mc_service_software_package_type msspt on mssp.fk_mc_service_software_package_id = msspt.id
+        <where>
+            mudtt.status = 50
+            <if test="param.fkTenantId != null">
+                and mudtt.fk_tenant_id = #{param.fkTenantId}
+            </if>
+        </where>
+    </select>
+
+    <select id="checkTaskRepeat" resultType="java.lang.Integer">
+        select count(mudtt.id)
+            from viz_mc_update_device_task_tenant mudtt
+            left join viz_mc_update_device_task mudt on mudtt.fk_mc_update_device_task_id = mudt.id
+            left join viz_mc_service_software_package mssp on mudt.fk_mc_server_software_package_id = mssp.id
+            left join viz_mc_service_software_package_type msspt on mssp.fk_mc_service_software_package_id = msspt.id
+        <where>
+            <if test="fkTenantId != null">
+                and mudtt.fk_tenant_id = #{fkTenantId}
+            </if>
+            <if test="fkMcServiceSoftwarePackageTypeId != null">
+                and msspt.id = #{fkMcServiceSoftwarePackageTypeId}
+            </if>
+            <if test="supplierType != null">
+                and mssp.supplier_type = #{supplierType}
+            </if>
+        </where>
+    </select>
+</mapper>

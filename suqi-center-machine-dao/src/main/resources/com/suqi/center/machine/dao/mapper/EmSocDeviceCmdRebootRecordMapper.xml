@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.EmSocDeviceCmdRebootRecordMapper">
+
+
+    <select id="quickPageById" resultType="com.suqi.center.machine.dao.entity.EmSocDeviceCmdRebootRecord">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM em_soc_device_cmd_reboot_record
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        and id &gt; #{lastId}
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+    <select id="quickPage" resultType="com.suqi.center.machine.dao.entity.EmSocDeviceCmdRebootRecord">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM em_soc_device_cmd_reboot_record
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        <if test="pageNo &gt; 1">
+                        and id &gt; (
+                            SELECT id FROM em_soc_device_cmd_reboot_record
+                                        <where>
+                                        <if test="ew != null">
+                                            ${ew.sqlSegment}
+                                        </if>
+                                        </where>
+                                        ORDER BY id LIMIT ${((pageNo-1)*pageSize)-1}, 1)
+                        </if>
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+</mapper>

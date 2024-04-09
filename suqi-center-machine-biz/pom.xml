@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>suqi-center-machine</artifactId>
+        <groupId>com.suqi.center</groupId>
+        <version>1.4.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>suqi-center-machine-biz</artifactId>
+
+
+    <properties>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-starter-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-center-machine-dao</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-center-machine-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.huawei.apigateway</groupId>
+            <artifactId>java-sdk-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fast.fsyun</groupId>
+            <artifactId>fastcloud-tencent-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-cvm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-starter-xxl-job</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-starter-biz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-center-external-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>kite-sender-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.suqi.center</groupId>
+            <artifactId>suqi-baidu-api</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

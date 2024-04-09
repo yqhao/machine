@@ -1,0 +1,50 @@
+image: docker:stable
+stages:
+  - package
+  - docker_build
+
+variables:
+  KUBECONFIG: /etc/deploy/config
+  MAVEN_OPTS: "-Dmaven.repo.local=/opt/cache/.m2/repository"
+
+    
+mvn_build_job:
+  image: maven:3.8.2-openjdk-17-slim
+  stage: package
+  tags:
+    - group-runner-java17
+  only:
+    - /^.*-develop$/
+    - /^.*-release$/
+
+  artifacts:
+    paths:
+      - ${CI_PROJECT_NAME}-service/target/${CI_PROJECT_NAME}-service.jar
+      - ${CI_PROJECT_NAME}-service/src/main/docker/Dockerfile
+    expire_in: 1 hour
+  script:
+#    - mvn clean install -Dmaven.test.skip=true -U
+#    - mvn clean package -Dmaven.test.skip=true -U
+    - mvn clean deploy -Dmaven.test.skip=true -U
+    - mkdir -p /opt/cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+    - cp -f ${CI_PROJECT_NAME}-service/target/${CI_PROJECT_NAME}-service.jar /opt/cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/app.jar
+    - cp -f ${CI_PROJECT_NAME}-service/src/main/docker/Dockerfile /opt/cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/Dockerfile
+
+
+docker_build_job:
+  stage: docker_build
+  tags:
+    - group-runner-java17
+  only:
+    - /^.*-develop$/
+    - /^.*-release$/
+  dependencies:
+    - mvn_build_job
+  before_script:
+    - docker login --username=$REGISTRY_USERNAME --password=$REGISTRY_PASSWORD $REGISTRY_SERVER
+  script:
+    - VERSION=`date +%y%m%d%H%M`
+    - echo "VERSION=$VERSION"
+    - docker build -t 122.9.102.141:80/suqi-center/${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}-$VERSION /opt/cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/
+    - docker push 122.9.102.141:80/suqi-center/${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}-$VERSION
+#    - rm -f -R /opt/cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}

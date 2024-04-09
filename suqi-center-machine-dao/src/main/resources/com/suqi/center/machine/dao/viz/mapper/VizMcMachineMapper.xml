@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.viz.mapper.VizMcMachineMapper">
+
+
+    <select id="quickPageById" resultType="com.suqi.center.machine.dao.viz.entity.VizMcMachine">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM viz_mc_machine
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        and id &gt; #{lastId}
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+    <select id="quickPage" resultType="com.suqi.center.machine.dao.viz.entity.VizMcMachine">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM viz_mc_machine
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        <if test="pageNo &gt; 1">
+                        and id &gt; (
+                            SELECT id FROM viz_mc_machine
+                                        <where>
+                                        <if test="ew != null">
+                                            ${ew.sqlSegment}
+                                        </if>
+                                        </where>
+                                        ORDER BY id LIMIT ${((pageNo-1)*pageSize)-1}, 1)
+                        </if>
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+    <select id="listPage" resultType="com.suqi.center.machine.dao.viz.vo.MachinePageVo">
+        select
+        mm.*
+        ,mms.running_status
+        ,mms.health_status
+        ,mms.streaming_status
+        ,mms.maint_status
+        ,mms.is_reseting
+        ,mms.is_user_save
+        ,mms.is_ota_upgrade
+        ,mms.hang_up_status
+        ,mms.restart_status
+        ,mms.root_access
+        from viz_mc_machine mm
+        left join viz_mc_machine_status mms on mm.instance_id = mms.instance_id
+        <where>
+            <if test="param.tenantId != null">
+                and mm.fk_tenant_id = #{param.tenantId}
+            </if>
+            <if test="param.fkExtCloudRegionId != null">
+                and mm.fk_ext_cloud_region_id = #{param.fkExtCloudRegionId}
+            </if>
+            <if test="param.externalAddr != null and param.externalAddr != ''">
+                and mm.external_addr = #{param.externalAddr}
+            </if>
+            <if test="param.internalAddr != null and param.internalAddr != ''">
+                and mm.internal_addr = #{param.internalAddr}
+            </if>
+            <if test="param.deviceId != null and param.deviceId != ''">
+                and mm.device_id like #{param.deviceId}
+            </if>
+            <if test="param.instanceId != null and param.instanceId != ''">
+                and mm.instance_id = #{param.instanceId}
+            </if>
+            <if test="param.macAddr != null and param.macAddr != ''">
+                and mm.mac_addr = #{param.macAddr}
+            </if>
+            <if test="param.serviceSoftwarePackageVersion != null and param.serviceSoftwarePackageVersion != ''">
+                and mm.service_software_package_version = #{param.serviceSoftwarePackageVersion}
+            </if>
+            <if test="param.chipModel != null and param.chipModel != ''">
+                and mm.chip_model = #{param.chipModel}
+            </if>
+            <if test="param.osVersion != null and param.osVersion != ''">
+                and mm.os_version = #{param.osVersion}
+            </if>
+            <if test="param.salesStatus != null">
+                and mm.sales_status = #{param.salesStatus}
+            </if>
+            <if test="param.supplierType != null">
+                and mm.supplier_type = #{param.supplierType}
+            </if>
+            <if test="param.rootAccess != null">
+                and mms.root_access = #{param.rootAccess}
+            </if>
+            <if test="param.status != null">
+                and mm.status = #{param.status}
+            </if>
+            <if test="param.status == null">
+                and mm.status = 50
+            </if>
+            <if test="param.runningStatus != null">
+                and mms.running_status = #{param.runningStatus}
+            </if>
+            <if test="param.healthStatus != null">
+                and mms.health_status = #{param.healthStatus}
+            </if>
+            <if test="param.streamingStatus != null">
+                and mms.streaming_status = #{param.streamingStatus}
+            </if>
+            <if test="param.maintStatus != null">
+                and mms.maint_status = #{param.maintStatus}
+            </if>
+            <if test="param.isReseting != null">
+                and mms.is_reseting = #{param.isReseting}
+            </if>
+            <if test="param.isUserSave != null">
+                and mms.is_user_save = #{param.isUserSave}
+            </if>
+            <if test="param.isOtaUpgrade != null">
+                and mms.is_ota_upgrade = #{isOtaUpgrade}
+            </if>
+            <if test="param.hangUpStatus != null">
+                and mms.hang_up_status = #{param.hangUpStatus}
+            </if>
+            <if test="param.restartStatus != null">
+                and mms.restart_status = #{param.restartStatus}
+            </if>
+        </where>
+    </select>
+</mapper>

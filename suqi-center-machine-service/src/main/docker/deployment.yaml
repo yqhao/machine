@@ -1,0 +1,51 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: suqi-center-machine
+  namespace: suqi-center
+  labels:
+    k8s-app: suqi-center-machine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: suqi-center-machine
+  template:
+    metadata:
+      name: suqi-center-machine
+      labels:
+        k8s-app: suqi-center-machine
+    spec:
+      containers:
+        - name: suqi-center-machine
+          image: 122.9.102.141:80/suqi-center/suqi-center-machine:1.0.0-20221013-develop-2210141635
+          ports:
+            - containerPort: 20000
+          env:
+            - name: APP_OPTS
+              value: >-
+                -Xmx2g -Xms2g -Xss256K -XX:MetaspaceSize=256M -XX:+UseG1GC
+                -XX:G1HeapRegionSize=16m -XX:G1ReservePercent=25
+                -XX:InitiatingHeapOccupancyPercent=30
+                -Dspring.cloud.nacos.config.server-addr=192.168.22.210:31010
+                -Dspring.cloud.nacos.config.namespace=9e015d62-7971-4f37-a140-1b9e7c9c1e8f
+                -Dspring.cloud.nacos.config.group=DEFAULT_GROUP
+                -Dspring.cloud.nacos.config.name=suqi-center-machine
+                -Dspring.cloud.nacos.discovery.server-addr=192.168.22.210:31010
+                -Dspring.cloud.nacos.discovery.namespace=9e015d62-7971-4f37-a140-1b9e7c9c1e8f
+                -Dspring.cloud.nacos.discovery.group=DEFAULT_GROUP
+          resources:
+            requests:
+              cpu: '0.5'
+              memory: 2Gi
+            limits:
+              cpu: '1'
+              memory: 2Gi
+          imagePullPolicy: IfNotPresent
+      imagePullSecrets:
+        - name: regcred
+
+
+
+
+

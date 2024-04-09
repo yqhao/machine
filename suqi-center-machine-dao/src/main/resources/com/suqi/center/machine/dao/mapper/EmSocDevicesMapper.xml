@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.EmSocDevicesMapper">
+
+
+	<select id="quickPageById" resultType="com.suqi.center.machine.dao.entity.EmSocDevices">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM em_soc_devices
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        and id &gt; #{lastId}
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+	<select id="quickPage" resultType="com.suqi.center.machine.dao.entity.EmSocDevices">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM em_soc_devices
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        <if test="pageNo &gt; 1">
+                        and id &gt; (
+                            SELECT id FROM em_soc_devices
+                                        <where>
+                                        <if test="ew != null">
+                                            ${ew.sqlSegment}
+                                        </if>
+                                        </where>
+                                        ORDER BY id LIMIT ${((pageNo-1)*pageSize)-1}, 1)
+                        </if>
+                    </where>
+                        ORDER BY id LIMIT #{pageSize}
+    </select>
+
+    <sql id="fetchSql">
+        FROM
+        <if test="specCode!=null and specCode!='' ">
+            sys_device_label lb left join em_soc_devices_label slb on slb.fk_sys_device_label_id=lb.id
+            left join
+        </if>
+        yun_member_device ymd <if test="specCode!=null and specCode!='' ">on slb.device_id=ymd.device_id and ymd.status=50</if>
+        LEFT JOIN em_soc_devices d ON d.device_id = ymd.device_id
+        <if test="moveData" >LEFT JOIN pcp_device pd ON d.device_id = pd.device_id and pd.project_id not like 'youchuang%' and pd.project_id not like 'tengxun%' and pd.project_id not like 'baidu%'  and pd.project_id is not null
+        LEFT JOIN pcp_config pc ON pc.project_id = pd.project_id
+        AND d.health_status = 1
+        AND d.maint_status = 0
+        AND d.is_reseting = 0
+        </if>
+        <where>
+            <if test="specCode!=null and specCode!='' ">
+                lb.label_name=#{specCode} and
+            </if>
+            ymd.fk_member_id = #{fkMemberId}
+            AND ymd.`status` = 50
+            AND ymd.allot_status = 0
+            AND ymd.service_biz_type = 0
+            AND d.maint_status = 0
+            <if test="moveData and fkPcpAreaId!=null">
+                AND pc.fk_pcp_area_id=#{fkPcpAreaId}
+            </if>
+            <if test="!moveData" >
+                AND d.health_status = 1
+                AND d.maint_status = 0
+                AND d.is_reseting = 0
+                <if test="fkPcpAreaId!=null">
+                    AND d.fk_pcp_area_id=#{fkPcpAreaId}
+                </if>
+            </if>
+            <if test="moveData" >
+                and pd.id &gt; 0
+            </if>
+        </where>
+    </sql>
+
+	<select id="fetchIdelDeviceTotals" resultType="java.lang.Long">
+        SELECT
+        count(distinct ymd.device_id)
+        <include refid="fetchSql"/>
+    </select>
+	<select id="fetchIdelDevice" resultType="java.lang.String">
+        SELECT
+        ymd.device_id
+        <include refid="fetchSql"/>
+        <if test="pageNo!=null and pageSize!=null">
+            LIMIT  ${((pageNo-1)*pageSize)},#{pageSize}
+        </if>
+    </select>
+</mapper>

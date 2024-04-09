@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.MachineStatisticsMapper">
+
+
+    <select id="getDistributableNum" resultType="com.suqi.center.machine.dao.vo.StatisticsDistributableNumVo">
+        SELECT
+        count(ymd.id) distributableNum
+        FROM
+        yun_member_device ymd
+        LEFT JOIN em_soc_devices esd ON ymd.fk_em_soc_devices_id = esd.id
+        WHERE
+        ymd.fk_member_id = #{param.tenantId}
+        AND ymd.STATUS = 50
+        AND ymd.allot_status = 0
+        and ymd.seed_device=0
+        and esd.running_status = 0
+        and esd.health_status = 1
+        and esd.maint_status = 0
+        and esd.is_user_save = 0
+        and esd.is_reseting = 0
+        and esd.is_ota_upgrade = 0
+        <if test="param.queueType!=null">
+            AND ymd.service_biz_type = #{param.queueType}
+        </if>
+    </select>
+
+</mapper>

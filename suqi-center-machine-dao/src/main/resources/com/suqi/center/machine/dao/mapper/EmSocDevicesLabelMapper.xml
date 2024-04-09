@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.EmSocDevicesLabelMapper">
+
+    <update id="saveOrUpdate">
+        insert into em_soc_devices_label  ( id,device_id,fk_sys_device_label_id,status,create_time,last_update_time,version_id )  VALUES
+        <foreach close=")" collection="updateList" item="item" open="(" separator="),(">
+            #{item.id} ,
+            #{item.deviceId} ,
+            #{item.fkSysDeviceLabelId} ,
+            #{item.status} ,
+            #{item.createTime},
+            #{item.lastUpdateTime},
+            #{item.versionId}
+        </foreach>
+        ON DUPLICATE KEY  UPDATE
+        fk_sys_device_label_id=ifnull(values(fk_sys_device_label_id),fk_sys_device_label_id),
+        status=ifnull(values(status),status),
+        last_update_time=ifnull(values(last_update_time),last_update_time)
+    </update>
+
+    <select id="list" resultType="com.suqi.center.machine.dao.vo.DevicesLabelListVo">
+        select esdl.device_id,esd.external_addr,esd.internal_addr
+             ,esdl.fk_sys_device_label_id
+             ,sdl.label_name sysDeviceLabelName
+             ,esdl.status
+             ,esdl.create_time
+             ,esdl.last_update_time
+        from em_soc_devices_label esdl
+        left join sys_device_label sdl
+        on esdl.fk_sys_device_label_id = sdl.id
+        left join em_soc_devices esd
+        on esdl.device_id = esd.device_id
+        <where>
+            <if test="param.deviceId != null and param.deviceId != ''">
+                and esdl.device_id = #{param.deviceId}
+            </if>
+            <if test="param.externalAddr != null and param.externalAddr != ''">
+                and esd.external_addr = #{param.externalAddr}
+            </if>
+            <if test="param.status != null">
+                and esdl.status = #{param.status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

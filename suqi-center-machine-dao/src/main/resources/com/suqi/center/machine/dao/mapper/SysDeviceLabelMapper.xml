@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.SysDeviceLabelMapper">
+
+    <select id="getDeviceIdleNum" resultType="java.lang.Integer">
+        select count(ymd.id) from yun_member_device ymd left join em_soc_devices_label esdl
+        on ymd.device_id = esdl.device_id
+        where ymd.fk_member_id = #{tenantId}
+          <if test="allotStatus!=null">
+            and ymd.allot_status = #{allotStatus}
+          </if>
+          and ymd.status = 50
+          and esdl.fk_sys_device_label_id = #{deviceLabelId}
+          and esdl.status = 50
+    </select>
+</mapper>

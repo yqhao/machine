@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suqi.center.machine.dao.mapper.TencentDeviceMapper">
+
+
+    <select id="quickPageById" resultType="com.suqi.center.machine.dao.entity.TencentDevice">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM tencent_device
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        and id &gt; #{lastId}
+                        ORDER BY id LIMIT #{pageSize}
+                    </where>
+    </select>
+
+    <select id="quickPage" resultType="com.suqi.center.machine.dao.entity.TencentDevice">
+        SELECT <choose><when test="ew!=null and ew.sqlSelect!=null and ew.sqlSelect !='' ">${ew.sqlSelect}</when><otherwise>*</otherwise></choose> FROM tencent_device
+                    <where>
+                        <if test="ew != null">
+                            ${ew.sqlSegment}
+                        </if>
+                        <if test="pageNo &gt; 1">
+                        and id &gt; (
+                            SELECT id FROM tencent_device
+                                        <where>
+                                        <if test="ew != null">
+                                            ${ew.sqlSegment}
+                                        </if>
+                                        </where>
+                                        ORDER BY id LIMIT ${((pageNo-1)*pageSize)-1}, 1)
+                        </if>
+                    </where>
+                    ORDER BY id LIMIT #{pageSize}
+    </select>
+    <sql id="userQuickPageSQL" >
+        FROM
+        tencent_device td
+        LEFT JOIN tencent_device_access_info tda ON td.instance_id = tda.instance_id
+        <where>
+            <if test="p.instanceId!=null and p.instanceId!='' ">
+                td.instance_id = #{p.instanceId}
+            </if>
+            <if test="p.imageId!=null and p.imageId!='' ">
+                AND td.image_id = #{p.imageId}
+            </if>
+            <if test="p.ip!=null and p.ip!='' ">
+                AND td.ip like concat('%',#{p.ip},'%')
+            </if>
+            <if test="publicIp!=null and publicIp!='' ">
+                AND tda.public_ip = #{publicIp}
+            </if>
+
+        </where>
+    </sql>
+    <select id="userQuickPageCount" resultType="java.lang.Long" >
+        SELECT
+            count(DISTINCT td.instance_id)
+        <include refid="userQuickPageSQL" />
+    </select>
+    <resultMap id="TencentDeviceDtoResultMap" type="com.suqi.center.machine.dao.dto.TencentDeviceDto" autoMapping="true">
+        <id column="id" property="id"/>
+        <result column="instance_id" property="instanceId" />
+        <collection property="publicIps" column="instance_id" autoMapping="true" ofType="com.suqi.center.machine.dao.dto.TencentDeviceIpInfoDto">
+        </collection>
+    </resultMap>
+    <select id="userQuickPage" resultMap="TencentDeviceDtoResultMap">
+        SELECT
+            td.*, tda.isp,
+            tda.public_ip,
+            min(tda.public_port) public_port
+        FROM
+            (
+                SELECT DISTINCT
+                    td.instance_id
+                    <include refid="userQuickPageSQL" />
+                GROUP BY
+                    td.id,
+                    tda.public_ip limit ${((pageNo-1)*pageSize)},#{pageSize}
+            ) x
+        LEFT JOIN tencent_device td ON td.instance_id = x.instance_id
+        LEFT JOIN tencent_device_access_info tda ON td.instance_id = tda.instance_id
+        GROUP BY
+			td.id,
+			tda.public_ip
+    </select>
+</mapper>

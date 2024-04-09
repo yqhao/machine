@@ -1,0 +1,10 @@
+suqi-center-machine-api/target/
+suqi-center-machine-biz/target/
+suqi-center-machine-dao/target/
+suqi-center-machine-service/target/
+.idea/
+suqi-center-machine-service/LOG_HOME_IS_UNDEFINED/
+/LOG_HOME_IS_UNDEFINED/project.name_IS_UNDEFINED/-2.log
+/LOG_HOME_IS_UNDEFINED/logs/project.name_IS_UNDEFINED/-error-2.log
+*.iml
+logs/
